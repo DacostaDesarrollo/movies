@@ -11,11 +11,7 @@ class MovieSlider extends StatelessWidget {
       color: Colors.red,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          
-          Text('Populares')
-          
-        ],
+        children: [Text('Populares')],
       ),
     );
   }
