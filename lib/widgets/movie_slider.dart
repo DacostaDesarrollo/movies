@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:movies/models/models.dart';
 
 class MovieSlider extends StatelessWidget {
-  const MovieSlider({Key? key}) : super(key: key);
+  final List<Movie> movies;
+  final String? title;
+
+  const MovieSlider({super.key, required this.movies, this.title});
 
   @override
   Widget build(BuildContext context) {
@@ -11,21 +15,22 @@ class MovieSlider extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20),
-              child: Text('Populares',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ))),
+          if (this.title != null)
+            Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Text(title!,
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ))),
           const SizedBox(
             height: 5,
           ),
           Expanded(
               child: ListView.builder(
             scrollDirection: Axis.horizontal,
-            itemCount: 20,
-            itemBuilder: (_, index) => const _MoviePoster(),
+            itemCount: movies.length,
+            itemBuilder: (_, index) => _MoviePoster(movie: movies[index]),
           ))
         ],
       ),
@@ -34,7 +39,9 @@ class MovieSlider extends StatelessWidget {
 }
 
 class _MoviePoster extends StatelessWidget {
-  const _MoviePoster({super.key});
+  final Movie movie;
+
+  const _MoviePoster({super.key, required this.movie});
 
   @override
   Widget build(BuildContext context) {
@@ -50,9 +57,9 @@ class _MoviePoster extends StatelessWidget {
               arguments: 'movie-instance'),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(20),
-            child: const FadeInImage(
-              placeholder: AssetImage('assets/no-image.jpg'),
-              image: NetworkImage('https://placehold.co/300x400.png'),
+            child: FadeInImage(
+              placeholder: const AssetImage('assets/no-image.jpg'),
+              image: NetworkImage(movie.fullPosterImg),
               width: 130,
               height: 190,
               fit: BoxFit.cover,
@@ -62,8 +69,8 @@ class _MoviePoster extends StatelessWidget {
         const SizedBox(
           height: 5,
         ),
-        const Text(
-          'Starwars: El restorno del rey',
+        Text(
+          movie.title,
           overflow: TextOverflow.ellipsis,
           textAlign: TextAlign.center,
         )

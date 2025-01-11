@@ -32,6 +32,12 @@ class Movie {
     required this.voteAverage,
     required this.voteCount,
   });
+  get fullPosterImg {
+    if (posterPath != null) {
+      return 'https://image.tmdb.org/t/p/w500$posterPath';
+    }
+    return 'https://placehold.co/300x450';
+  }
 
   factory Movie.fromJson(String str) => Movie.fromMap(json.decode(str));
 
