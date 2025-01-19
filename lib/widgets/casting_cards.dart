@@ -1,25 +1,46 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:movies/models/models.dart';
+import 'package:movies/providers/movies_provider.dart';
+import 'package:provider/provider.dart';
 
 class CastingCards extends StatelessWidget {
-  const CastingCards({super.key});
+  final int movieId;
+
+  const CastingCards({super.key, required this.movieId});
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      height: 180,
-      margin: const EdgeInsets.only(bottom: 30),
-      child: ListView.builder(
-          scrollDirection: Axis.horizontal,
-          itemCount: 10,
-          itemBuilder: (_, int index) => const _CastCard()),
-    );
+    final moviesProvider = Provider.of<MoviesProvider>(context, listen: false);
+
+    return FutureBuilder(
+        future: moviesProvider.getMovieCast(movieId),
+        builder: (_, AsyncSnapshot<List<Cast>> snapshot) {
+          if (!snapshot.hasData) {
+            return Container(
+              constraints: const BoxConstraints(maxWidth: 150),
+              height: 180,
+              child: CupertinoActivityIndicator(),
+            );
+          }
+          final List<Cast> cast = snapshot.data!;
+
+          return Container(
+            width: double.infinity,
+            height: 180,
+            margin: const EdgeInsets.only(bottom: 30),
+            child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: 10,
+                itemBuilder: (_, int index) => _CastCard(cast[index])),
+          );
+        });
   }
 }
 
 class _CastCard extends StatelessWidget {
-  const _CastCard({super.key});
+  final Cast actor;
+  const _CastCard(this.actor);
 
   @override
   Widget build(BuildContext context) {
@@ -31,16 +52,16 @@ class _CastCard extends StatelessWidget {
         children: [
           ClipRRect(
             borderRadius: BorderRadius.circular(20),
-            child: const FadeInImage(
-              placeholder: AssetImage('assets/no-image.jpg'),
-              image: NetworkImage('https://placehold.co/150x300.png'),
+            child: FadeInImage(
+              placeholder: const AssetImage('assets/no-image.jpg'),
+              image: NetworkImage(actor.fullProfileImg),
               height: 140,
               width: 100,
               fit: BoxFit.cover,
             ),
           ),
           Text(
-            'actor.name lorem upsum dolor',
+            actor.name,
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
           )
